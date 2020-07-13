@@ -11,34 +11,8 @@ const submitBtn = document.querySelector('.btn-primary');
 const errorMsg = document.getElementById('error-message');
 const hideFormBtn = document.getElementById('show-form');
 const formCard = document.getElementById('form-card');
-const deleteButton = document.querySelectorAll('.btn-delete');
-
-// create the new post element
-const createNewPost = () => { 
-    let date = Date();
-    const myHTML = `
-    <div class ='card'>
-        <img class="card-img-top" src = "${newPostImg.value}"
-        alt="Card image cap">
-        <div class = "card-body">
-            <h5 class ="card-title">${newPostTitle.value} by ${newPostAuthor.value}</h5>
-            <p class = "card-text">${newPostContent.value}</p>
-            <button type="button" class="btn btn-sm btn-light btn-delete">Delete entry</button>
-        </div>
-        <div class="card-footer text-muted">${date}</div>
-    </div>`;
-    return myHTML;
-};
-
-// add event listner to the submit btn
-submitBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (event.target.value.split(' ').length < 20) {
-            newPostContent.classList.add('is-invalid');
-            newPostContent.textContent = `${errorMsg}`;
-    };
-    topListCard.insertAdjacentHTML("beforebegin", createNewPost());
-})
+const deleteButtons = document.querySelectorAll('.btn-delete');
+const postForm = document.getElementById('post-form');
 
 // Hiding/showing the form card
 hideFormBtn.addEventListener('click', (event) => {
@@ -51,8 +25,48 @@ hideFormBtn.addEventListener('click', (event) => {
     };
 });
 
-// Delete button
+// create the new post element
+const createNewPost = () => { 
+    let date = new Date();
+    const myHTML = `
+    <div class ='card'>
+        <img class="card-img-top" src = "${newPostImg.value}"
+        alt="Card image cap">
+        <div class = "card-body">
+            <h5 class ="card-title">${newPostTitle.value} by <small>${newPostAuthor.value}</small></h5>
+            <p class = "card-text">${newPostContent.value}</p>
+            <button type="button" class="btn btn-sm btn-light btn-delete">Delete entry</button>
+        </div>
+        <div class="card-footer text-muted">${date.toLocaleDateString()}</div>
+    </div>`;
+    return myHTML;
+};
 
-// deleteButton.addEventListener('click', (event) => {
-//     event.target.remove();
-// });
+//Handle input/ check the post content
+newPostContent.addEventListener('blur', event => {
+    words = newPostContent.value.split(' ').length;
+    if (words < 20) {
+        newPostContent.classList.add('is-invalid');
+        errorMsg.classList.remove('hidden');
+} else {
+    newPostContent.classList.remove('is-invalid');
+    errorMsg.classList.add('hidden');
+}
+});
+
+// add event listner to the submit btn
+submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    topListCard.insertAdjacentHTML("beforebegin", createNewPost());
+    postForm.reset();
+});
+
+// Delete button
+const handleDeleteBtn = (e) => {
+if (e.target.classList.contains('btn-delete')) {
+    const deleteBtn = e.target;
+    deleteBtn.closest('.card').remove();
+}
+}
+// event delegation
+ document.addEventListener('click', handleDeleteBtn);
